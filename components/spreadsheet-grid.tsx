@@ -35,7 +35,7 @@ export function SpreadsheetGrid({ cells, selectedCell, onCellSelect, onCellChang
     console.log(`Selected and editing cell: ${cellId}`)
   }
 
-  const handleCellDoubleClick = (cellId: string) => {
+  const handleCellDoubleClick = () => {
     // No-op or keep for future advanced editing
   }
 
@@ -184,7 +184,7 @@ export function SpreadsheetGrid({ cells, selectedCell, onCellSelect, onCellChang
                         isSelected ? "ring-2 ring-blue-500 bg-blue-50" : "hover:bg-gray-50"
                       }`}
                       onClick={() => handleCellClick(cellId)}
-                      onDoubleClick={() => handleCellDoubleClick(cellId)}
+                      onDoubleClick={() => handleCellDoubleClick()}
                     >
                       {isEditing ? (
                         <input
