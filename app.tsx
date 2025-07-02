@@ -13,6 +13,7 @@ export default function App() {
   const [cells, setCells] = useState<Record<string, Cell>>({})
   const [selectedCell, setSelectedCell] = useState<string | null>("A1")
   const [formulaBarValue, setFormulaBarValue] = useState("")
+  const [activeSheet, setActiveSheet] = useState("Sheet1")
 
   const handleCellSelect = useCallback(
     (cellId: string) => {
@@ -60,7 +61,11 @@ export default function App() {
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       <Header />
-      <Toolbar />
+      <Toolbar
+        onAction={() => {}}
+        selectedCell={selectedCell}
+        cell={selectedCell ? cells[selectedCell] : undefined}
+      />
       <FormulaBar
         selectedCell={selectedCell}
         cellValue={formulaBarValue}
@@ -74,7 +79,7 @@ export default function App() {
         onCellSelect={handleCellSelect}
         onCellChange={handleCellChange}
       />
-      <SheetTabs />
+      <SheetTabs activeSheet={activeSheet} onSheetChange={setActiveSheet} />
     </div>
   )
 }

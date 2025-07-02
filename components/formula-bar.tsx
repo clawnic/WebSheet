@@ -8,36 +8,50 @@ import type { Cell } from "@/types/spreadsheet"
 
 interface FormulaBarProps {
   selectedCell: string | null
-  cells: Record<string, Cell>
-  onCellChange: (cellId: string, value: string) => void
+  // New props
+  cells?: Record<string, Cell>
+  onCellChange?: (cellId: string, value: string) => void
+  // Legacy props
+  cellValue?: string
+  onValueChange?: (value: string) => void
+  onConfirm?: () => void
+  onCancel?: () => void
 }
 
-export function FormulaBar({ selectedCell, cells, onCellChange }: FormulaBarProps) {
+export function FormulaBar(props: FormulaBarProps) {
+  const { selectedCell, cells, onCellChange, cellValue, onValueChange, onConfirm, onCancel } = props
   const [value, setValue] = useState("")
   const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
-    if (selectedCell) {
+    if (typeof cellValue === "string") {
+      setValue(cellValue)
+    } else if (selectedCell && cells) {
       const cell = cells[selectedCell]
       setValue(cell?.formula || cell?.value || "")
     }
-  }, [selectedCell, cells])
+  }, [selectedCell, cells, cellValue])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value)
     setIsEditing(true)
+    if (onValueChange) onValueChange(e.target.value)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleConfirm()
+      if (onConfirm) onConfirm()
+      else if (onCellChange && selectedCell) onCellChange(selectedCell, value)
+      setIsEditing(false)
     } else if (e.key === "Escape") {
-      handleCancel()
+      if (onCancel) onCancel()
+      setIsEditing(false)
     }
   }
 
   const handleCancel = () => {
-    if (selectedCell) {
+    if (onCancel) onCancel()
+    else if (selectedCell && cells) {
       const cell = cells[selectedCell]
       setValue(cell?.formula || cell?.value || "")
     }
@@ -45,9 +59,8 @@ export function FormulaBar({ selectedCell, cells, onCellChange }: FormulaBarProp
   }
 
   const handleConfirm = () => {
-    if (selectedCell) {
-      onCellChange(selectedCell, value)
-    }
+    if (onConfirm) onConfirm()
+    else if (onCellChange && selectedCell) onCellChange(selectedCell, value)
     setIsEditing(false)
   }
 

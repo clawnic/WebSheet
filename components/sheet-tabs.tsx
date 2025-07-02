@@ -1,15 +1,18 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus, MoreHorizontal } from "lucide-react"
 
-export function SheetTabs() {
-  const [activeSheet, setActiveSheet] = useState("Sheet1")
-  const [sheets] = useState(["Sheet1", "Sheet2", "Sheet3"])
+interface SheetTabsProps {
+  activeSheet: string
+  onSheetChange: (sheet: string) => void
+}
+
+export function SheetTabs({ activeSheet, onSheetChange }: SheetTabsProps) {
+  const sheets = ["Sheet1", "Sheet2", "Sheet3"]
 
   const handleSheetClick = (sheetName: string) => {
-    setActiveSheet(sheetName)
+    onSheetChange(sheetName)
     console.log(`Switched to ${sheetName}`)
   }
 
