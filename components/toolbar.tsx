@@ -19,7 +19,7 @@ import {
 import type { Cell } from "@/types/spreadsheet"
 
 interface ToolbarProps {
-  onAction: (action: string, value?: any) => void
+  onAction: (action: string, value?: string | number) => void
   selectedCell: string | null
   cell?: Cell
 }

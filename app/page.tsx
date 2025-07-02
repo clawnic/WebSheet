@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Header } from "@/components/header"
 import { SpreadsheetGrid } from "@/components/spreadsheet-grid"
 import { Toolbar } from "@/components/toolbar"
@@ -12,31 +12,9 @@ export default function Page() {
   const [cells, setCells] = useState<Record<string, Cell>>({})
   const [selectedCell, setSelectedCell] = useState<string | null>(null)
   const [activeSheet, setActiveSheet] = useState("Sheet1")
-  const [undoStack, setUndoStack] = useState<Record<string, Cell>[]>([])
-  const [redoStack, setRedoStack] = useState<Record<string, Cell>[]>([])
-
-  // --- Undo/Redo ---
-  const pushUndo = (cells: Record<string, Cell>) => setUndoStack(stack => [...stack, { ...cells }])
-  const handleUndo = () => {
-    setUndoStack(stack => {
-      if (stack.length === 0) return stack
-      setRedoStack(rstack => [...rstack, { ...cells }])
-      setCells(stack[stack.length - 1])
-      return stack.slice(0, -1)
-    })
-  }
-  const handleRedo = () => {
-    setRedoStack(stack => {
-      if (stack.length === 0) return stack
-      pushUndo(cells)
-      setCells(stack[stack.length - 1])
-      return stack.slice(0, -1)
-    })
-  }
 
   // --- Cell Change ---
   const handleCellChange = (cellId: string, value: string) => {
-    pushUndo(cells)
     setCells(prev => ({
       ...prev,
       [cellId]: {
@@ -53,7 +31,6 @@ export default function Page() {
   // --- Formatting ---
   const updateCellFormat = (format: Partial<Cell>) => {
     if (!selectedCell) return
-    pushUndo(cells)
     setCells(prev => ({
       ...prev,
       [selectedCell]: {
@@ -64,14 +41,12 @@ export default function Page() {
   }
 
   // --- Toolbar handlers ---
-  const handleToolbar = (action: string, value?: any) => {
-    if (action === "undo") handleUndo()
-    else if (action === "redo") handleRedo()
-    else if (action === "bold") updateCellFormat({ bold: !cells[selectedCell!]?.bold })
+  const handleToolbar = (action: string, value?: string | number) => {
+    if (action === "bold") updateCellFormat({ bold: !cells[selectedCell!]?.bold })
     else if (action === "italic") updateCellFormat({ italic: !cells[selectedCell!]?.italic })
     else if (action === "underline") updateCellFormat({ underline: !cells[selectedCell!]?.underline })
-    else if (action === "fontFamily") updateCellFormat({ fontFamily: value })
-    else if (action === "fontSize") updateCellFormat({ fontSize: value })
+    else if (action === "fontFamily") updateCellFormat({ fontFamily: value as string })
+    else if (action === "fontSize") updateCellFormat({ fontSize: value as number })
   }
 
   return (
